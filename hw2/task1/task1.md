@@ -2,7 +2,7 @@
 
 ### Создание bash-скрипта
 
-![img.png](img.png)
+![bash_script.png](img/bash_script.png)
 
 Сохраним и сделаем файл исполняемым:
 
@@ -12,7 +12,7 @@ sudo chmod +x /usr/local/bin/homework_service.sh
 
 Создадим service-файл, чтобы `systemd` мог управлять скриптом:
 
-![img_2.png](img_2.png)
+![service_file.png](img/service_file.png)
 
 Политика `Restart=always` говорит о том что при падении скрипт снова запустится. `RestartSec=15` - обозначает время до рестарта.
 
