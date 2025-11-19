@@ -15,11 +15,10 @@ server {
         proxy_pass http://backend_pool;
         proxy_set_header X-high-load-test 123;
         proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-        proxy_next_upstream_tries 7;
-        proxy_next_upstream_timeout 30s;
+        proxy_next_upstream_tries 1;
         
-        proxy_connect_timeout 1s;
-        proxy_read_timeout 1s;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 10s;
     }
 }
 ```
@@ -305,5 +304,67 @@ Line-based text data: text/html (1 lines)
 Отключим сервер 8081 и отправляем запросы на nginx:
 
 ```shell
+for i in {1..12}; do curl http://localhost:8888; sleep 1; done
+```
+
+Вывод:
 
 ```
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>
+<h2>*** Response from Backend Server 2 ***</h2>
+<h2>*** Response from Backend Server 2 ***</h2>
+<h2>*** Response from Backend Server 2 ***</h2>
+<h2>*** Response from Backend Server 2 ***</h2>
+<h2>*** Response from Backend Server 2 ***</h2>
+```
+
+Из вывода видно, что первые 7 запросов были на 1 сервер, а т.к. он отключен, то возвращалась ошибка 502.
+Затем трафик был перенаправлен на бэкап-сервер и последние 5 запросов из 12 отработали корректно.
